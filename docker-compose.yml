@@ -1,43 +1,70 @@
 version: "3.3"
+
 services:
-  mail:
-    image: bytemark/smtp
-    restart: always
 
-  plausible_db:
-    image: postgres:12
-    volumes:
-      - db-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=postgres
-
-  plausible_events_db:
+  clickhouse:
     image: yandex/clickhouse-server:latest
-    volumes:
-      - event-data:/var/lib/clickhouse
-      - ./clickhouse/clickhouse-config.xml:/etc/clickhouse-server/config.d/logging.xml:ro
-      - ./clickhouse/clickhouse-user-config.xml:/etc/clickhouse-server/users.d/logging.xml:ro
+    restart: unless-stopped
     ulimits:
       nofile:
-        soft: 262144
         hard: 262144
+        soft: 262144
+    volumes:
+      - clickhouse:/var/lib/clickhouse
+      - ./clickhouse/clickhouse-config.xml:/etc/clickhouse-server/config.d/logging.xml:ro
+      - ./clickhouse/clickhouse-user-config.xml:/etc/clickhouse-server/users.d/logging.xml:ro
+
+  geoip:
+    image: maxmindinc/geoipupdate
+    environment:
+      - GEOIPUPDATE_ACCOUNT_ID=${GEOIPUPDATE_ACCOUNT_ID?}
+      - GEOIPUPDATE_EDITION_IDS=GeoLite2-Country
+      - GEOIPUPDATE_FREQUENCY=168 # update every 7 days
+      - GEOIPUPDATE_LICENSE_KEY=${GEOIPUPDATE_LICENSE_KEY?}
+    restart: unless-stopped
+    volumes:
+      - geoip:/usr/share/GeoIP
+
+  mail:
+    image: bytemark/smtp
+    restart: unless-stopped
 
   plausible:
     image: plausible/analytics:latest
     command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh db init-admin && /entrypoint.sh run"
     depends_on:
-      - plausible_db
-      - plausible_events_db
+      - clickhouse
+      - geoip
       - mail
+      - postgres
+    environment:
+      - ADMIN_USER_EMAIL=${ADMIN_USER_EMAIL?}
+      - ADMIN_USER_NAME=${ADMIN_USER_NAME:-admin}
+      - ADMIN_USER_PWD=${ADMIN_USER_PWD?}
+      - BASE_URL=${BASE_URL:-http://localhost:8000}
+      - CLICKHOUSE_DATABASE_URL=http://clickhouse:8123/plausible
+      - DATABASE_URL=postgres://plausible:plausible@postgres:5432/plausible
+      - GEOLITE2_COUNTRY_DB=/geoip/GeoLite2-Country.mmdb
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE?}
     ports:
-      - 8000:8000
-    env_file:
-      - plausible-conf.env
+      - 127.0.0.1:${PORT:-8000}:8000
+    volumes:
+      - geoip:/geoip:ro
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=plausible
+      - POSTGRES_PASSWORD=plausible
+      - POSTGRES_USER=plausible
+    restart: unless-stopped
+    volumes:
+      - postgres:/var/lib/postgresql/data
 
 volumes:
-  db-data:
+  postgres:
     driver: local
-  event-data:
+  clickhouse:
     driver: local
   geoip:
     driver: local
