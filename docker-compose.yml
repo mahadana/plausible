@@ -44,6 +44,7 @@ services:
       - BASE_URL=${BASE_URL:-http://localhost:8000}
       - CLICKHOUSE_DATABASE_URL=http://clickhouse:8123/plausible
       - DATABASE_URL=postgres://plausible:plausible@postgres:5432/plausible
+      - DISABLE_REGISTRATION=true
       - GEOLITE2_COUNTRY_DB=/geoip/GeoLite2-Country.mmdb
       - SECRET_KEY_BASE=${SECRET_KEY_BASE?}
     ports:
