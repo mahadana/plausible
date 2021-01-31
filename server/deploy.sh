@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 
 PUJAS_LIVE_DIR="/opt/pujas.live"
 LOG_DIR="$PUJAS_LIVE_DIR/logs/deploy/$(date +%Y/%m)"
-LOG_FILE="plausible-$(date +%Y-%m-%d).log"
+LOG_FILE="plausible-deploy-$(date +%Y-%m-%d).log"
 
 mkdir -p "$LOG_DIR"
 
@@ -17,7 +17,7 @@ mkdir -p "$LOG_DIR"
   git fetch
   git reset --hard origin/main
 
-  docker-compose pull
+  docker-compose pull -q
   docker-compose up -d -t 3
   docker image prune -f
 
