@@ -13,8 +13,6 @@ log="/var/log/plausible-deploy.log"
   git fetch
   git reset --hard origin/main
 
-  cd server
-
   docker-compose pull
   docker-compose up -d -t 3
   docker image prune -f
