@@ -21,7 +21,7 @@ fi
 docker-compose stop plausible
 
 docker-compose stop clickhouse
-docker-compose-backup run clickhouse bash -c '
+docker-compose-backup run --rm clickhouse bash -c '
   rm -rf /var/lib/clickhouse/* &&
   cd / &&
   tar zxf /backup/data/clickhouse.tar.gz'

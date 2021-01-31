@@ -13,7 +13,7 @@ mkdir -p backup/data
 docker-compose stop plausible
 
 docker-compose stop clickhouse
-docker-compose-backup run clickhouse bash -c \
+docker-compose-backup run --rm clickhouse bash -c \
   'tar cz /var/lib/clickhouse > /backup/data/clickhouse.tar.gz'
 docker-compose rm -f clickhouse
 docker-compose up -d clickhouse
