@@ -1,0 +1,9 @@
+version: "3.3"
+
+services:
+  clickhouse:
+    volumes:
+      - ./backup/data:/backup/data
+  postgres:
+    volumes:
+      - ./backup/data:/backup/data

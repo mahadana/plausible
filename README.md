@@ -1,16 +1,26 @@
-# Analytics for `pujas.live`
+# Pujas.live Analytics
 
-Uses [Plausible Analytics](https://github.com/plausible/analytics).
+[Plausible Analytics](https://github.com/plausible/analytics) for
+[Pujas.live](https://pujas.live/).
 
 ## Server Setup
 
 ```sh
-cd /opt
-git clone https://github.com/mahadana/plausible.pujas.live.git
-cd plausible.pujas.live
+git clone https://github.com/mahadana/plausible.git /opt/plausible
+cd /opt/plausible
 cp .env.example .env
 
 # Edit .env
 
 docker-compose up -d
+```
+
+## Backup/Restore
+
+```sh
+backup/backup.sh
+
+# Files will be in backup/data
+
+backup/restore.sh
 ```

@@ -17,16 +17,21 @@ services:
   geoip:
     image: maxmindinc/geoipupdate
     environment:
-      - GEOIPUPDATE_ACCOUNT_ID=${GEOIPUPDATE_ACCOUNT_ID?}
-      - GEOIPUPDATE_EDITION_IDS=GeoLite2-Country
-      - GEOIPUPDATE_FREQUENCY=168 # update every 7 days
-      - GEOIPUPDATE_LICENSE_KEY=${GEOIPUPDATE_LICENSE_KEY?}
+      GEOIPUPDATE_ACCOUNT_ID: ${GEOIPUPDATE_ACCOUNT_ID?}
+      GEOIPUPDATE_EDITION_IDS: GeoLite2-Country
+      GEOIPUPDATE_FREQUENCY: 168 # update every 7 days
+      GEOIPUPDATE_LICENSE_KEY: ${GEOIPUPDATE_LICENSE_KEY?}
     restart: unless-stopped
     volumes:
       - geoip:/usr/share/GeoIP
 
   mail:
     image: bytemark/smtp
+    environment:
+      RELAY_HOST: ${MAIL_RELAY_HOST:-in.mailjet.com}
+      RELAY_PORT: ${MAIL_RELAY_PORT:-2525}
+      RELAY_USERNAME: ${MAIL_RELAY_USER?}
+      RELAY_PASSWORD: ${MAIL_RELAY_PASSWORD?}
     restart: unless-stopped
 
   plausible:
@@ -38,15 +43,16 @@ services:
       - mail
       - postgres
     environment:
-      - ADMIN_USER_EMAIL=${ADMIN_USER_EMAIL?}
-      - ADMIN_USER_NAME=${ADMIN_USER_NAME:-admin}
-      - ADMIN_USER_PWD=${ADMIN_USER_PWD?}
-      - BASE_URL=${BASE_URL:-http://localhost:8000}
-      - CLICKHOUSE_DATABASE_URL=http://clickhouse:8123/plausible
-      - DATABASE_URL=postgres://plausible:plausible@postgres:5432/plausible
-      - DISABLE_REGISTRATION=true
-      - GEOLITE2_COUNTRY_DB=/geoip/GeoLite2-Country.mmdb
-      - SECRET_KEY_BASE=${SECRET_KEY_BASE?}
+      ADMIN_USER_EMAIL: ${ADMIN_USER_EMAIL:-admin@pujas.live}
+      ADMIN_USER_NAME: ${ADMIN_USER_NAME:-admin}
+      ADMIN_USER_PWD: ${ADMIN_USER_PWD?}
+      BASE_URL: ${BASE_URL:-https://plausible.pujas.live}
+      CLICKHOUSE_DATABASE_URL: http://clickhouse:8123/plausible
+      DATABASE_URL: postgres://plausible:plausible@postgres:5432/plausible
+      DISABLE_REGISTRATION: "true"
+      MAILER_EMAIL: ${MAILER_EMAIL:-contact@pujas.live}
+      GEOLITE2_COUNTRY_DB: /geoip/GeoLite2-Country.mmdb
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE?}
     ports:
       - 127.0.0.1:${PORT:-8000}:8000
     volumes:
@@ -55,9 +61,9 @@ services:
   postgres:
     image: postgres:latest
     environment:
-      - POSTGRES_DB=plausible
-      - POSTGRES_PASSWORD=plausible
-      - POSTGRES_USER=plausible
+      POSTGRES_DB: plausible
+      POSTGRES_PASSWORD: plausible
+      POSTGRES_USER: plausible
     restart: unless-stopped
     volumes:
       - postgres:/var/lib/postgresql/data
