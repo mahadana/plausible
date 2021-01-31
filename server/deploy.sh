@@ -25,4 +25,4 @@ mkdir -p "$LOG_DIR"
 
   echo "$(realpath "$0") END"
 
-) 2>&1 | ts | tee -a "$LOG_DIR/$LOG_FILE"
+) 2>&1 | ts "[%Y-%m-%d %H:%M:%S]" | tee -a "$LOG_DIR/$LOG_FILE"
