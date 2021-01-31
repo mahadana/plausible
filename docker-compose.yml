@@ -54,7 +54,7 @@ services:
       GEOLITE2_COUNTRY_DB: /geoip/GeoLite2-Country.mmdb
       SECRET_KEY_BASE: ${SECRET_KEY_BASE?}
     ports:
-      - 127.0.0.1:${PORT:-8000}:8000
+      - ${PORT:-8000}:8000
     volumes:
       - geoip:/geoip:ro
 
