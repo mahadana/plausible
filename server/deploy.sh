@@ -8,11 +8,11 @@ cd "$(dirname "$0")/.."
 
 PUJAS_LIVE_DIR="/opt/pujas.live"
 
-LOG_PREFIX="plausible-deploy-"
+LOG_NAME="plausible-deploy"
 LOG_DIR="$PUJAS_LIVE_DIR/logs/deploy"
-LOG_FILE="$LOG_PREFIX$(date +%Y-%m-%d).log"
+LOG_FILE="$LOG_NAME-$(date +%Y-%m-%d).log"
 LOG_PATH="$LOG_DIR/$LOG_FILE"
-LATEST_PATH="$LOG_DIR/latest.log"
+LATEST_PATH="$LOG_DIR/latest-$LOG_NAME.log"
 
 test -x /usr/bin/ts || apt-get install -yqq moreutils
 
