@@ -7,8 +7,12 @@ SCRIPT_PATH="$(realpath "$0")"
 cd "$(dirname "$0")/.."
 
 PUJAS_LIVE_DIR="/opt/pujas.live"
-LOG_DIR="$PUJAS_LIVE_DIR/logs/deploy/$(date +%Y/%m)"
-LOG_FILE="plausible-deploy-$(date +%Y-%m-%d).log"
+
+LOG_PREFIX="plausible-deploy-"
+LOG_DIR="$PUJAS_LIVE_DIR/logs/deploy"
+LOG_FILE="$LOG_PREFIX$(date +%Y-%m-%d).log"
+LOG_PATH="$LOG_DIR/$LOG_FILE"
+LATEST_PATH="$LOG_DIR/latest.log"
 
 test -x /usr/bin/ts || apt-get install -yqq moreutils
 
@@ -26,4 +30,7 @@ mkdir -p "$LOG_DIR"
 
   echo "$SCRIPT_PATH END"
 
-) 2>&1 | ts "[%Y-%m-%d %H:%M:%S]" | tee -a "$LOG_DIR/$LOG_FILE"
+) 2>&1 | ts "[%Y-%m-%d %H:%M:%S]" | tee -a "$LOG_PATH"
+
+ls -rt1 "$LOG_DIR/$LOG_PREFIX"*.log | head -n -10 | xargs --no-run-if-empty rm
+ln -sf "$LOG_FILE" "$LATEST_PATH"
