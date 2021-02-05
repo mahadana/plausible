@@ -28,8 +28,8 @@ services:
   mail:
     image: bytemark/smtp
     environment:
-      RELAY_HOST: ${MAIL_RELAY_HOST:-in.mailjet.com}
-      RELAY_PORT: ${MAIL_RELAY_PORT:-2525}
+      RELAY_HOST: ${MAIL_RELAY_HOST:?}
+      RELAY_PORT: ${MAIL_RELAY_PORT:?}
       RELAY_USERNAME: ${MAIL_RELAY_USER?}
       RELAY_PASSWORD: ${MAIL_RELAY_PASSWORD?}
     restart: unless-stopped
@@ -43,18 +43,18 @@ services:
       - mail
       - postgres
     environment:
-      ADMIN_USER_EMAIL: ${ADMIN_USER_EMAIL:-admin@pujas.live}
-      ADMIN_USER_NAME: ${ADMIN_USER_NAME:-admin}
-      ADMIN_USER_PWD: ${ADMIN_USER_PWD?}
-      BASE_URL: ${BASE_URL:-https://plausible.pujas.live}
+      ADMIN_USER_EMAIL: ${ADMIN_EMAIL?}
+      ADMIN_USER_NAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_USER_PWD: ${ADMIN_PASSWORD?}
+      BASE_URL: ${PLAUSIBLE_URL?}
       CLICKHOUSE_DATABASE_URL: http://clickhouse:8123/plausible
       DATABASE_URL: postgres://plausible:plausible@postgres:5432/plausible
       DISABLE_REGISTRATION: "true"
-      MAILER_EMAIL: ${MAILER_EMAIL:-contact@pujas.live}
+      MAILER_EMAIL: ${MAIL_FROM_ADDRESS?}
       GEOLITE2_COUNTRY_DB: /geoip/GeoLite2-Country.mmdb
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE?}
+      SECRET_KEY_BASE: ${PLAUSIBLE_SECRET?}
     ports:
-      - ${PORT:-8000}:8000
+      - ${PLAUSIBLE_PORT:-8000}:8000
     volumes:
       - geoip:/geoip:ro
 
