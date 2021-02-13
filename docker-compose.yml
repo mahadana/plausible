@@ -26,12 +26,12 @@ services:
       - geoip:/usr/share/GeoIP
 
   mail:
-    image: bytemark/smtp
+    image: mahadana/mail
     environment:
-      RELAY_HOST: ${MAIL_RELAY_HOST:?}
-      RELAY_PORT: ${MAIL_RELAY_PORT:?}
-      RELAY_USERNAME: ${MAIL_RELAY_USER?}
-      RELAY_PASSWORD: ${MAIL_RELAY_PASSWORD?}
+      MAIL_RELAY_HOST: ${MAIL_RELAY_HOST?}
+      MAIL_RELAY_PORT: ${MAIL_RELAY_PORT?}
+      MAIL_RELAY_USER: ${MAIL_RELAY_USER?}
+      MAIL_RELAY_PASSWORD: ${MAIL_RELAY_PASSWORD?}
     restart: unless-stopped
 
   plausible:
